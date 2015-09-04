@@ -1,0 +1,33 @@
+{
+    "backend":
+    {
+        "ircnet":
+        {
+            "type": "irc",
+            "nick": "hurlumhei",
+            "server": "irc.du.se",
+            "port": 6667
+        },
+        "whatsapp1":
+        {
+            "type": "whatsapp",
+            "number": "000505050505",
+            "password": "fdsafasfas"
+        }
+    },
+
+    "group":
+    {
+        "test-group":
+        [
+            {
+                "backend": "ircnet",
+                "channel" : "#ttesaff"
+            },
+            {
+                "backend": "ircnet",
+                "channel" : "#test2fdsa"
+            }
+        ]
+    }
+}
