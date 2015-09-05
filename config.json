@@ -1,11 +1,18 @@
 {
     "backend":
     {
-        "ircnet":
+        "efnet":
         {
             "type": "irc",
             "nick": "hurlumhei",
             "server": "irc.du.se",
+            "port": 6667
+        },
+        "ircnet":
+        {
+            "type": "irc",
+            "nick": "hurlumhei123",
+            "server": "irc.cc.tut.fi",
             "port": 6667
         },
         "whatsapp1":
@@ -21,12 +28,16 @@
         "test-group":
         [
             {
-                "backend": "ircnet",
+                "backend": "efnet",
                 "channel" : "#ttesaff"
             },
             {
-                "backend": "ircnet",
+                "backend": "efnet",
                 "channel" : "#test2fdsa"
+            },
+            {
+                "backend": "ircnet",
+                "channel" : "#testtt"
             }
         ]
     }

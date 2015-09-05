@@ -18,12 +18,7 @@ class IrcBackend(Backend):
         self.incoming = incoming
         self.outgoing = outgoing
 
-        try:
-            self.server = self.reactor.server()
-            self.server.connect(self.server_address, self.port, self.nickname)
-        except irc.client.ServerConnectionError:
-            print(sys.exc_info()[1])
-            raise SystemExit(1)
+        self._connect()
 
         self.reactor.add_global_handler("welcome", self.on_connect)
         self.reactor.add_global_handler("disconnect", self.on_disconnect)
@@ -37,16 +32,25 @@ class IrcBackend(Backend):
             self.reactor.process_once()
             time.sleep(0.2)
 
+    def _connect(self):
+        try:
+            self.server = self.reactor.server()
+            self.server.connect(self.server_address, self.port, self.nickname)
+        except irc.client.ServerConnectionError:
+            print(sys.exc_info()[1])
+            logger.debug("IrcBackend: error connecting to " + self.name)
+
     def on_connect(self, connection, event):
-        logger.debug("IrcBackend: on_connect")
+        logger.debug("IrcBackend: connected to " + self.name)
 
         for chan in self.channels:
+            logger.debug("IrcBackend: joining to " + chan + "@" + self.name)
             if irc.client.is_channel(chan):
                 connection.join(chan)
 
     def on_disconnect(self, connection, event):
-        logger.debug("IrcBackend: on_disconnect")
-        #TODO: Retry connecion
+        logger.debug("IrcBackend: disconnected from " + self.name + " and trying to reconnect")
+        self._connect()
         pass
 
     def on_newmsg(self, channel, event):

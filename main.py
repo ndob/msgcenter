@@ -18,12 +18,12 @@ class Center(object):
     def add_group(self, name, sinks):
         self.groups[name] = sinks
         for sink in sinks:
-            self.join(sink.backend, sink.channel)
-
-    def join(self, backend_name, channel):
-        if self.backends.has_key(backend_name):
-            b = self.backends[backend_name]
-            b.join(channel)
+            if self.backends.has_key(sink.backend):
+                logger.debug("Center: adding sink " + sink.channel + "@" + sink.backend)
+                b = self.backends[sink.backend]
+                b.join(sink.channel)
+            else:
+                logger.error("no backend with name: " + backend_name)
 
     def start(self):
         for name, b in self.backends.iteritems():
@@ -32,9 +32,9 @@ class Center(object):
             p = Process(target=b.start, args=(recv_conn, self.incoming,))
             p.start()
 
-        self.consume()
+        self._consume()
 
-    def get_groups_for(self, channel):
+    def _get_groups_for(self, channel):
         logger.debug("searching groups for:" + channel)
 
         ret = dict()
@@ -45,13 +45,13 @@ class Center(object):
                     break
         return ret
 
-    def consume(self):
+    def _consume(self):
         while 1:
             # get() blocks, if there are no messages
             msg = self.incoming.get()
             logger.debug("new message arrived from " + msg.channel)
 
-            groups = self.get_groups_for(msg.channel)
+            groups = self._get_groups_for(msg.channel)
             for name, sinks in groups.iteritems():
                 for sink in sinks:
                     if msg.backend == sink.backend and msg.channel == sink.channel:
@@ -59,6 +59,9 @@ class Center(object):
 
                     logger.debug("sending to:" + sink.channel)
                     self.pipes[sink.backend].send({"to": sink.channel, "msg": msg})
+
+            # prevent flooding
+            time.sleep(0.1)
 
 def parse_config(center):
     with open("config.json") as file:
