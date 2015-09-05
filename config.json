@@ -18,7 +18,7 @@
         "whatsapp1":
         {
             "type": "whatsapp",
-            "number": "000505050505",
+            "phone": "000505050505",
             "password": "fdsafasfas"
         }
     },
@@ -38,6 +38,10 @@
             {
                 "backend": "ircnet",
                 "channel" : "#testtt"
+            },
+            {
+                "backend": "whatsapp1",
+                "channel" : "whatsapp-channel-id"
             }
         ]
     }

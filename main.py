@@ -1,4 +1,5 @@
 from msgcenter.irc_backend import IrcBackend
+from msgcenter.whatsapp_backend import WhatsAppBackend
 from msgcenter.message import MessageSink
 from msgcenter.dispatcher import Dispatcher
 import json
@@ -10,8 +11,8 @@ def apply_config(dispatcher):
         for name, conf in config["backend"].iteritems():
             if conf["type"] == "irc":
                 dispatcher.register(name, IrcBackend(name, conf["server"], conf["port"], conf["nick"]))
-            #elif conf.type == "whatsapp":
-            #    center.register(WhatsAppBackend(conf.phone, conf.password))
+            elif conf["type"] == "whatsapp":
+                dispatcher.register(name, WhatsAppBackend(name, conf["phone"], conf["password"]))
 
         for name, sink_defs in config["group"].iteritems():
             sinks = []
