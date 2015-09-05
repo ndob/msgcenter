@@ -33,19 +33,21 @@ class IrcBackend(Backend):
             time.sleep(0.2)
 
     def _connect(self):
+        logger.debug("IrcBackend: connecting to " + self.name)
         try:
             self.server = self.reactor.server()
             self.server.connect(self.server_address, self.port, self.nickname)
         except irc.client.ServerConnectionError:
-            print(sys.exc_info()[1])
-            logger.debug("IrcBackend: error connecting to " + self.name)
+            logger.error("IrcBackend: error connecting to " + self.name)
+            time.sleep(5)
+            self._connect()
 
     def on_connect(self, connection, event):
         logger.debug("IrcBackend: connected to " + self.name)
 
         for chan in self.channels:
-            logger.debug("IrcBackend: joining to " + chan + "@" + self.name)
             if irc.client.is_channel(chan):
+                logger.debug("IrcBackend: joining to " + chan + "@" + self.name)
                 connection.join(chan)
 
     def on_disconnect(self, connection, event):
@@ -54,7 +56,7 @@ class IrcBackend(Backend):
         pass
 
     def on_newmsg(self, channel, event):
-        logger.debug("IrcBackend: on_newmsg" + str(event.target) + " -> " + event.arguments[0])
+        logger.debug("IrcBackend: new message on " + str(event.target) + " -> " + event.arguments[0])
 
         msg = Message(backend=self.name, 
             channel=event.target,
