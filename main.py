@@ -1,15 +1,15 @@
 from msgcenter.irc_backend import IrcBackend
 from msgcenter.message import MessageSink
-from msgcenter.center import Center
+from msgcenter.dispatcher import Dispatcher
 import json
 
-def parse_config(center):
+def apply_config(dispatcher):
     with open("config.json") as file:
         config = json.loads(file.read())
 
         for name, conf in config["backend"].iteritems():
             if conf["type"] == "irc":
-                center.register(name, IrcBackend(name, conf["server"], conf["port"], conf["nick"]))
+                dispatcher.register(name, IrcBackend(name, conf["server"], conf["port"], conf["nick"]))
             #elif conf.type == "whatsapp":
             #    center.register(WhatsAppBackend(conf.phone, conf.password))
 
@@ -19,12 +19,12 @@ def parse_config(center):
                 new_sink = MessageSink(sink["backend"], sink["channel"])
                 sinks.append(new_sink)
             
-            center.add_group(name, sinks) 
+            dispatcher.add_group(name, sinks) 
 
 def main():
-    center = Center()
-    parse_config(center)
-    center.start()
+    d = Dispatcher()
+    apply_config(d)
+    d.start()
 
 if __name__ == "__main__":
     main()

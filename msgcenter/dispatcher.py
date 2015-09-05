@@ -2,7 +2,7 @@ from logger import logger
 from multiprocessing import Process, Queue, Pipe
 import time
 
-class Center(object):
+class Dispatcher(object):
     def __init__(self):
         self.backends = dict()
         self.groups = dict()
@@ -16,7 +16,7 @@ class Center(object):
         self.groups[name] = sinks
         for sink in sinks:
             if self.backends.has_key(sink.backend):
-                logger.debug("Center: adding sink " + sink.channel + "@" + sink.backend)
+                logger.debug("Dispatcher: adding sink " + sink.channel + "@" + sink.backend)
                 b = self.backends[sink.backend]
                 b.join(sink.channel)
             else:
