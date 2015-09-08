@@ -1,5 +1,6 @@
 from backend import Backend
 from message import Message
+from logger import logger
 from yowsup.common import YowConstants
 from yowsup.layers import YowLayerEvent
 from yowsup.layers.auth import AuthError
@@ -25,7 +26,7 @@ class MsgCenterLayer(YowInterfaceLayer):
         if messageProtocolEntity.getType() == "text":
             self.on_text_message(messageProtocolEntity)
         else:
-            logger.debug("WhatsAppBackend: other than text-messages not implemented")
+            logger.warning("WhatsAppBackend: other than text-messages not implemented")
 
         # Acks, that message has "arrived"
         self.toLower(messageProtocolEntity.ack())
