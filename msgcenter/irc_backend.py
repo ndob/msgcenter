@@ -26,12 +26,11 @@ class IrcBackend(Backend):
         self.reactor.add_global_handler("unavailresource", self.on_resource_unavailable)
 
         while 1:
-            if self.incoming.poll():
+            if self.incoming.poll(0.2):
                 info = self.incoming.recv()
                 self._incoming_msg(info["to"], info["msg"].pretty_print())
             
             self.reactor.process_once()
-            time.sleep(0.2)
 
     def join(self, channel):
         self.channels.append(channel)
@@ -58,6 +57,7 @@ class IrcBackend(Backend):
 
     def on_disconnect(self, connection, event):
         logger.debug("IrcBackend: disconnected from " + self.name + " and trying to reconnect")
+        time.sleep(5)
         self._connect()
         pass
 
