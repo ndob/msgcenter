@@ -91,6 +91,6 @@ class WhatsAppBackend(Backend):
                     YowLayerEvent(
                         MsgCenterLayer.EVENT_NEW_MSG, 
                         to=info["to"], 
-                        text=info["msg"].pretty_print()
+                        text=info["msg"].pretty_str().encode("utf-8")
                     )
                 )

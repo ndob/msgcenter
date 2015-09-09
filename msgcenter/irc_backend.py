@@ -28,8 +28,8 @@ class IrcBackend(Backend):
         while 1:
             if self.incoming.poll(0.2):
                 info = self.incoming.recv()
-                self._incoming_msg(info["to"], info["msg"].pretty_print())
-            
+                self._incoming_msg(info["to"], info["msg"].pretty_str())
+
             self.reactor.process_once()
 
     def join(self, channel):
@@ -78,4 +78,4 @@ class IrcBackend(Backend):
         self.outgoing.put(msg)
 
     def _incoming_msg(self, channel, message):
-        self.server.privmsg(channel, unicode(message))
+        self.server.privmsg(channel, message)
