@@ -42,6 +42,7 @@ def message_to_text(entity):
 
 class MsgCenterLayer(YowInterfaceLayer):
     PROP_OUTGOING = "com.github.ndob.msgcenter.whatsappbackend.incoming"
+    PROP_BACKEND_NAME = "com.github.ndob.msgcenter.whatsappbackend.backend_name"
     EVENT_NEW_MSG = "com.github.ndob.msgcenter.whatsappbackend.new_message"
 
     def onEvent(self, layerEvent):
@@ -51,7 +52,7 @@ class MsgCenterLayer(YowInterfaceLayer):
 
     @ProtocolEntityCallback("message")
     def on_message(self, messageProtocolEntity):
-        msg = Message(backend="whatsapp1",
+        msg = Message(backend = self.getProp(self.__class__.PROP_BACKEND_NAME),
             channel = messageProtocolEntity.getFrom(),
             nickname = messageProtocolEntity.getNotify(),
             text = message_to_text(messageProtocolEntity))
@@ -90,6 +91,7 @@ class WhatsAppBackend(Backend):
 
         self.stack.setCredentials(self.credentials)
         self.stack.setProp(MsgCenterLayer.PROP_OUTGOING, outgoing)
+        self.stack.setProp(MsgCenterLayer.PROP_BACKEND_NAME, self.name)
         self.stack.broadcastEvent(YowLayerEvent(YowNetworkLayer.EVENT_STATE_CONNECT))
 
         # TODO:Use multiprocessing. There seems to be a problem with yowsup:
