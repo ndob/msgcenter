@@ -1,47 +1,32 @@
 {
     "backend":
     {
-        "efnet":
-        {
-            "type": "irc",
-            "nick": "hurlumhei",
-            "server": "irc.du.se",
-            "port": 6667
-        },
-        "ircnet":
-        {
-            "type": "irc",
-            "nick": "hurlumhei123",
-            "server": "irc.cc.tut.fi",
-            "port": 6667
-        },
-        "whatsapp1":
+        "sample_whatsapp_account":
         {
             "type": "whatsapp",
-            "phone": "000505050505",
-            "password": "fdsafasfas"
+            "phone": "358505555555",
+            "password": "base64-encoded-password"
+        },
+        "sample_irc_network":
+        {
+            "type": "irc",
+            "server": "irc.server.net",
+            "port": 6667,
+            "nick": "msgcenter"
         }
     },
 
     "group":
     {
-        "test-group":
+        "sample_group":
         [
             {
-                "backend": "efnet",
-                "channel" : "#ttesaff"
+                "backend": "sample_irc_network",
+                "channel" : "#msgcenter"
             },
             {
-                "backend": "efnet",
-                "channel" : "#test2fdsa"
-            },
-            {
-                "backend": "ircnet",
-                "channel" : "#testtt"
-            },
-            {
-                "backend": "whatsapp1",
-                "channel" : "whatsapp-channel-id"
+                "backend": "sample_whatsapp_account",
+                "channel" : "358505555555-1000000000@g.us"
             }
         ]
     }
