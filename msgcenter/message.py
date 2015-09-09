@@ -31,7 +31,7 @@ class Message(object):
         Returns:
             Message as prettified unicode string.
         """
-        return unicode("[" + self.nickname + "]") + self.text
+        return unicode("[" + self.nickname + "] ") + self.text
 
 class MessageSink(object):
     def __init__(self, backend, channel):
