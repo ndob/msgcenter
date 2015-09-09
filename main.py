@@ -3,9 +3,12 @@ from msgcenter.whatsapp_backend import WhatsAppBackend
 from msgcenter.message import MessageSink
 from msgcenter.dispatcher import Dispatcher
 import json
+import sys
 
-def apply_config(dispatcher):
-    with open("config.json") as file:
+DEFAULT_CONFIG_FILENAME = "config.json"
+
+def apply_config(filename, dispatcher):
+    with open(filename) as file:
         config = json.loads(file.read())
 
         for name, conf in config["backend"].iteritems():
@@ -24,7 +27,13 @@ def apply_config(dispatcher):
 
 def main():
     d = Dispatcher()
-    apply_config(d)
+    
+    if len(sys.argv) == 2:
+        config_filename = sys.argv[1]
+    else:
+        config_filename = DEFAULT_CONFIG_FILENAME
+
+    apply_config(config_filename, d)
     d.start()
 
 if __name__ == "__main__":
