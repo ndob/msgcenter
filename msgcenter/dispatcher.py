@@ -20,7 +20,7 @@ class Dispatcher(object):
                 b = self.backends[sink.backend]
                 b.join(sink.channel)
             else:
-                logger.error("no backend with name: " + backend_name)
+                logger.error("no backend with name: " + sink.backend)
 
     def start(self):
         for name, b in self.backends.iteritems():
