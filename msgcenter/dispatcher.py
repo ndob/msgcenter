@@ -1,6 +1,7 @@
-from logger import logger
+from .logger import logger
 from multiprocessing import Process, Queue, Pipe
 import time
+import six
 
 class Dispatcher(object):
     def __init__(self):
@@ -15,7 +16,7 @@ class Dispatcher(object):
     def add_group(self, name, sinks):
         self.groups[name] = sinks
         for sink in sinks:
-            if self.backends.has_key(sink.backend):
+            if sink.backend in self.backends:
                 logger.debug("Dispatcher: adding sink " + sink.channel + "@" + sink.backend)
                 b = self.backends[sink.backend]
                 b.join(sink.channel)
@@ -23,7 +24,7 @@ class Dispatcher(object):
                 logger.error("no backend with name: " + sink.backend)
 
     def start(self):
-        for name, b in self.backends.iteritems():
+        for name, b in six.iteritems(self.backends):
             recv_conn, send_conn = Pipe(False)
             self.pipes[name] = send_conn
             p = Process(target=b.start, args=(recv_conn, self.incoming,))
@@ -35,7 +36,7 @@ class Dispatcher(object):
         logger.debug("searching groups for:" + channel)
 
         ret = dict()
-        for name, sinks in self.groups.iteritems():
+        for name, sinks in six.iteritems(self.groups):
             for sink in sinks:
                 if sink.channel == channel:
                     ret[name] = sinks
@@ -49,7 +50,7 @@ class Dispatcher(object):
             logger.debug("new message arrived from " + msg.channel)
 
             groups = self._get_groups_for(msg.channel)
-            for name, sinks in groups.iteritems():
+            for name, sinks in six.iteritems(groups):
                 for sink in sinks:
                     if msg.backend == sink.backend and msg.channel == sink.channel:
                         continue

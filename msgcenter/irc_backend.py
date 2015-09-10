@@ -1,6 +1,6 @@
-from backend import Backend
-from message import Message
-from logger import logger
+from .backend import Backend
+from .message import Message
+from .logger import logger
 import irc.bot
 import time
 

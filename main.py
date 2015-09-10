@@ -3,6 +3,7 @@ from msgcenter.whatsapp_backend import WhatsAppBackend
 from msgcenter.message import MessageSink
 from msgcenter.dispatcher import Dispatcher
 import json
+import six
 import sys
 
 DEFAULT_CONFIG_FILENAME = "config.json"
@@ -11,13 +12,13 @@ def apply_config(filename, dispatcher):
     with open(filename) as file:
         config = json.loads(file.read())
 
-        for name, conf in config["backend"].iteritems():
+        for name, conf in six.iteritems(config["backend"]):
             if conf["type"] == "irc":
                 dispatcher.register(name, IrcBackend(name, conf["server"], conf["port"], conf["nick"]))
             elif conf["type"] == "whatsapp":
                 dispatcher.register(name, WhatsAppBackend(name, conf["phone"], conf["password"]))
 
-        for name, sink_defs in config["group"].iteritems():
+        for name, sink_defs in six.iteritems(config["group"]):
             sinks = []
             for sink in sink_defs:
                 new_sink = MessageSink(sink["backend"], sink["channel"])

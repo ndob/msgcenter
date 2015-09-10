@@ -1,6 +1,6 @@
-from backend import Backend
-from message import Message
-from logger import logger
+from .backend import Backend
+from .message import Message, to_raw_unicode
+from .logger import logger
 from yowsup.common import YowConstants
 from yowsup.layers import YowLayerEvent
 from yowsup.layers.auth import AuthError
@@ -11,11 +11,16 @@ from yowsup.stacks import YowStack
 from yowsup.stacks import YowStackBuilder
 from threading import Thread
 import time
+import sys
+
+def to_raw_unicode(string):
+    # Ensures compatibility between Python 2.x and 3.x
+    return string.encode("raw_unicode_escape") if sys.version_info >= (3,0) else string
 
 def message_to_text(entity):
     ret = ""
     if entity.getType() == "text":
-        ret = entity.getBody()
+        ret = to_raw_unicode(entity.getBody())
     elif entity.getType() == "media":
         if entity.getMediaType() == "image":
             ret = "*IMAGE* " + entity.getMediaUrl()
@@ -36,7 +41,7 @@ def message_to_text(entity):
 
     if hasattr(entity, "getCaption") and callable(getattr(entity, "getCaption")):
         ret += " "
-        ret += entity.getCaption()
+        ret += to_raw_unicode(entity.getCaption())
 
     return ret
 
