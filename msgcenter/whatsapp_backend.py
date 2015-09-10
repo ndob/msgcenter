@@ -50,23 +50,23 @@ class MsgCenterLayer(YowInterfaceLayer):
     PROP_BACKEND_NAME = "com.github.ndob.msgcenter.whatsappbackend.backend_name"
     EVENT_NEW_MSG = "com.github.ndob.msgcenter.whatsappbackend.new_message"
 
-    def onEvent(self, layerEvent):
-        if layerEvent.getName() == self.__class__.EVENT_NEW_MSG:
-            self._incoming_msg(layerEvent.getArg("to"), layerEvent.getArg("text"))
+    def onEvent(self, event):
+        if event.getName() == self.__class__.EVENT_NEW_MSG:
+            self._incoming_msg(event.getArg("to"), event.getArg("text"))
             return True
 
     @ProtocolEntityCallback("message")
-    def on_message(self, messageProtocolEntity):
+    def on_message(self, entity):
         msg = Message(backend = self.getProp(self.__class__.PROP_BACKEND_NAME),
-            channel = messageProtocolEntity.getFrom(),
-            nickname = messageProtocolEntity.getNotify(),
-            text = message_to_text(messageProtocolEntity))
+            channel = entity.getFrom(),
+            nickname = entity.getNotify(),
+            text = message_to_text(entity))
         self.getProp(self.__class__.PROP_OUTGOING).put(msg)
 
         # Acks, that message has "arrived"
-        self.toLower(messageProtocolEntity.ack())
+        self.toLower(entity.ack())
         # Acks, that message has been "read"
-        self.toLower(messageProtocolEntity.ack(True))
+        self.toLower(entity.ack(True))
 
     @ProtocolEntityCallback("receipt")
     def on_receipt(self, entity):
