@@ -1,5 +1,5 @@
 from .backend import Backend
-from .message import Message, to_raw_unicode
+from .message import Message
 from .logger import logger
 from yowsup.common import YowConstants
 from yowsup.layers import YowLayerEvent
