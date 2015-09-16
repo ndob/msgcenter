@@ -40,8 +40,10 @@ def message_to_text(entity):
         logger.warning("WhatsAppBackend: formatting for %s not implemented. Entity: %s" % (entity.getType(), entity))
 
     if hasattr(entity, "getCaption") and callable(getattr(entity, "getCaption")):
-        ret += " "
-        ret += to_raw_unicode(entity.getCaption()).decode("utf-8")
+        caption = entity.getCaption()
+        if isinstance(caption, str):
+            ret += " "
+            ret += to_raw_unicode(caption).decode("utf-8")
 
     return ret
 
