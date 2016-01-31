@@ -48,7 +48,7 @@ def message_to_text(entity):
     return ret
 
 class MsgCenterLayer(YowInterfaceLayer):
-    PROP_OUTGOING = "com.github.ndob.msgcenter.whatsappbackend.incoming"
+    PROP_OUTGOING = "com.github.ndob.msgcenter.whatsappbackend.outgoing"
     PROP_BACKEND_NAME = "com.github.ndob.msgcenter.whatsappbackend.backend_name"
     EVENT_NEW_MSG = "com.github.ndob.msgcenter.whatsappbackend.new_message"
 
@@ -106,10 +106,10 @@ class WhatsAppBackend(Backend):
         p = Thread(target=self.wait_incoming_msgs)
         p.start()
 
-        try:            
-            self.stack.loop()                
+        try:
+            self.stack.loop()
         except AuthError as e:
-            print("Authentication Error: %s" % e)
+            logger.error("Authentication Error: %s" % e)
 
     def join(self, channel):
         self.channels.append(channel)
