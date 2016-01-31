@@ -59,7 +59,6 @@ class IrcBackend(Backend):
         logger.debug("IrcBackend: disconnected from " + self.name + " and trying to reconnect")
         time.sleep(5)
         self._connect()
-        pass
 
     def on_newmsg(self, channel, event):
         logger.debug("IrcBackend: new message on " + str(event.target) + " -> " + event.arguments[0])
@@ -78,4 +77,34 @@ class IrcBackend(Backend):
         self.outgoing.put(msg)
 
     def _incoming_msg(self, channel, message):
-        self.server.privmsg(channel, message)
+        # New lines are not allowed within a message.
+        message = message.replace("\n", " ")
+
+        try:
+            self.server.privmsg(channel, message)
+        except irc.client.MessageTooLong as e:
+            logger.error("Too long message for IRC, splitting.")
+
+            # 512 is the maximum number of bytes to be sent
+            # as a single message (see irc-module: irc/client.py:909).
+            # In addition to the message itself a carriage return "\r\n"
+            # is added to the message. This implies maximum number of
+            # bytes to be 510.
+            # In worst case utf-8 occupies 4 bytes per character, so the
+            # message is split to messages having floor(510 / 4) = 127
+            # characters.
+            message_size = 127
+            partial_messages = []
+            for i in range(0, len(message), message_size):
+                partial_messages.append(message[i:i + message_size])
+
+            should_pause_between_sends = len(partial_messages) > 5
+            for i in range(len(partial_messages)):
+                self.server.privmsg(channel, partial_messages[i])
+                if should_pause_between_sends:
+                    # Pause between sends to prevent being kicked
+                    # out because of flooding.
+                    time.sleep(2)
+
+        except ValueError as e:
+            logger.error("Error sending to irc:" + str(e))
